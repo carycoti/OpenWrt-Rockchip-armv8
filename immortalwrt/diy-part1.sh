@@ -61,8 +61,8 @@ find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/PKG_SOURCE_U
 # rm -rf feeds/packages/utils/v2dat
 # rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
+# rm -rf feeds/packages/lang/golang
+# git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
 
 rm -rf feeds/packages/lang/ruby
 git clone https://github.com/coolsnowwolf/packages tmp/lede-packages
