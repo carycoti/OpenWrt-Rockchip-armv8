@@ -52,7 +52,7 @@ sed -i 's/\(zerotier\)=y/\1=m/' .config
 sed -i 's/\(zh-cn\)=y/\1=n/' .config
 sed -i 's/\(luci-app-argon-config\)=y/\1=n/' .config
 
-# 添加额外软件包
+# 添加或禁用额外软件包
 echo 'CONFIG_PACKAGE_luci-app-diskman=y' >>.config
 echo 'CONFIG_PACKAGE_luci-app-samba4=y' >>.config
 echo 'CONFIG_PACKAGE_docker-compose=y' >>.config
@@ -60,6 +60,7 @@ echo 'CONFIG_PACKAGE_luci-app-dockerman=y' >>.config
 echo 'CONFIG_PACKAGE_luci-app-istorex=y' >>.config
 echo 'CONFIG_PACKAGE_luci-app-linkease=y' >>.config
 # echo 'CONFIG_PACKAGE_luci-app-gowebdav=y' >>.config
+echo 'CONFIG_PACKAGE_luci-lib-taskd=n' >>.confi
 
 # 科学上网插件
 
