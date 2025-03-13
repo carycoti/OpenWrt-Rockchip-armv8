@@ -42,8 +42,8 @@ sed -i "s/\/bin\/ash/\/usr\/bin\/fish/" package/base-files/files/etc/passwd
 #git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
 
 # 停用冲突的软件包: luci-app-smartdns换为需要操作的包名，启用=y， 停用=n
-sed -i "s/\(luci-app-smartdns\)=y/\1=n/" .config
-sed -i "s/\(luci-app-smartdns-zh-cn\)=y/\1=n/" .config
+# sed -i "s/\(luci-app-smartdns\)=y/\1=n/" .config
+# sed -i "s/\(luci-app-smartdns-zh-cn\)=y/\1=n/" .config
 sed -i 's/\(luci-app-bypass\)=y/\1=n/' .config
 sed -i 's/\(luci-app-passwall\)=y/\1=n/' .config
 sed -i 's/\(luci-app-ssr-plus\)=y/\1=n/' .config
@@ -51,6 +51,7 @@ sed -i 's/\(luci-app-ssr-plus\)=y/\1=n/' .config
 sed -i 's/\(zerotier\)=y/\1=m/' .config
 sed -i 's/\(zh-cn\)=y/\1=n/' .config
 sed -i 's/\(luci-app-argon-config\)=y/\1=n/' .config
+sed -i 's/\(luci-app-adguardhome\)=y/\1=n/' .config
 
 # 添加或禁用额外软件包
 echo 'CONFIG_PACKAGE_luci-app-diskman=y' >>.config
