@@ -61,8 +61,8 @@ echo 'CONFIG_PACKAGE_luci-app-dockerman=y' >>.config
 # echo 'CONFIG_PACKAGE_luci-app-istorex=y' >>.config
 echo 'CONFIG_PACKAGE_luci-app-quickstart=y' >>.config
 echo 'CONFIG_PACKAGE_luci-app-linkease=y' >>.config
-# echo 'CONFIG_PACKAGE_luci-app-gowebdav=y' >>.config
-echo 'CONFIG_PACKAGE_luci-lib-taskd=n' >>.confi
+echo 'CONFIG_PACKAGE_luci-app-gowebdav=y' >>.config
+# echo 'CONFIG_PACKAGE_luci-lib-taskd=n' >>.confi
 
 # 科学上网插件
 
