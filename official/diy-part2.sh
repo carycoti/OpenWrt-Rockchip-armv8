@@ -34,7 +34,7 @@ sed -i 's/\(\([ \t]\+\)set network.$1.netmask=.*\)/\1\n \2set network.$1.gateway
 sed -i 's/\(luci-app-bypass\)=y/\1=n/' .config
 sed -i 's/\(luci-app-passwall\)=y/\1=n/' .config
 sed -i 's/\(luci-app-ssr-plus\)=y/\1=n/' .config
-# sed -i 's/\(chinadns-ng\)=y/\1=n/' .config
+sed -i 's/\(netdata\)=y/\1=n/' .config
 sed -i 's/\(zerotier\)=y/\1=m/' .config
 
 # 添加额外软件包
