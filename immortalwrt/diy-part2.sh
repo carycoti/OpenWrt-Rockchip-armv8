@@ -52,6 +52,7 @@ sed -i 's/\(zerotier\)=y/\1=m/' .config
 sed -i 's/\(zh-cn\)=y/\1=n/' .config
 sed -i 's/\(luci-app-argon-config\)=y/\1=n/' .config
 sed -i 's/\(luci-app-adguardhome\)=y/\1=n/' .config
+sed -i 's/\(netdata\)=y/\1=n/' .config
 
 # 添加或禁用额外软件包
 echo 'CONFIG_PACKAGE_luci-app-diskman=y' >>.config
