@@ -84,7 +84,7 @@ mv tmp/lede-packages/lang/ruby feeds/packages/lang/ruby
 sed -i "s/PKG_MIRROR_HASH:=ed7c71afb74c8232cfda084545ad8c1f8fe6c5e8176da9a77729e1fa9044d863/PKG_MIRROR_HASH:=skip/" feeds/packages/net/trojan-plus/Makefile
 sed -i "s/PKG_MIRROR_HASH:=0981bf49cb8a6e7f81912808987727bf6a2454ad0a3cf744f1a64bfc1969b088/PKG_MIRROR_HASH:=skip/" feeds/packages/net/redsocks2/Makefile
 sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b554664439f04/PKG_MIRROR_HASH:=skip/" feeds/packages/lang/lua-maxminddb/Makefile
-sed -i 's/PKG_HASH:=.*/PKG_HASH:=skip/' feeds/kiddin9/cgroupfs-mount/Makefile
+sed -i 's/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=skip/' feeds/kiddin9/cgroupfs-mount/Makefile
 
 # 处理luci.mk 使正确处理LUCI_LANG.zh-cn 生成中文包
 # sed -i "/LUCI_LANG.zh_Hant/a\LUCI_LANG.zh-cn=\$\(LUCI_LANG.zh_Hans\)\nLUCI_LANG.zh-tw=\$\(LUCI_LANG.zh_Hant\)\nLUCI_LANG.en=English" feeds/luci/luci.mk
@@ -95,7 +95,7 @@ sed -i 's/PKG_HASH:=.*/PKG_HASH:=skip/' feeds/kiddin9/cgroupfs-mount/Makefile
 # kiddin9 相关的冲突包
 rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*,smartdns}
 rm -rf feeds/packages/utils/v2dat
-rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,accel-ppp,dockerd}
+rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,accel-ppp,dockerd,cgroupfs-mount}
 mv -f feeds/kiddin9/r81* tmp/
 # 替换 quickstart.lua
 curl -sL https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/luci-app-quickstart/luasrc/controller/quickstart.lua -o feeds/kiddin9/luci-app-quickstart/luasrc/controller/quickstart.lua
