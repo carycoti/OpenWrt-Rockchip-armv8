@@ -78,7 +78,7 @@ sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b5
 # kiddin9 相关的冲突包
 rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*,smartdns}
 rm -rf feeds/packages/utils/v2dat
-rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,quectel_Gobinet,quectel_MHI,accel-ppp,dockerd,cgroupfs-mount,lua-maxminddb,luci-app-linkease}
+rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,quectel_Gobinet,quectel_MHI,accel-ppp,dockerd,cgroupfs-mount,lua-maxminddb,luci-app-linkease,luci-app-quickstart,fullconenat-nft}
 mv -f feeds/kiddin9/r81* tmp/
 
 # 替换 quickstart.lua
