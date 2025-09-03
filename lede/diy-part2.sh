@@ -43,7 +43,7 @@ sed -i "/18.06.9/d" package/lean/default-settings/files/zzz-default-settings
 
 
 # 停用冲突的软件包: luci-app-smartdns换为需要操作的包名，启用=y， 停用=n
-sed -i "s/\(luci-app-smartdns\)=y/\1=n/" .config
+# sed -i "s/\(luci-app-smartdns\)=y/\1=n/" .config
 # sed -i 's/\(luci-app-bypass\)=y/\1=n/' .config
 # sed -i 's/\(luci-app-passwall\)=y/\1=n/' .config
 # sed -i 's/\(luci-app-ssr-plus\)=y/\1=n/' .config
