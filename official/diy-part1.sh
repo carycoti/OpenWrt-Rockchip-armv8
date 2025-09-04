@@ -66,7 +66,7 @@ mv tmp/lede-packages/lang/ruby feeds/packages/lang/ruby
 
 # 2024-07-24临时更改chinadns-ng
 sed -i "s/PKG_MIRROR_HASH:=ed7c71afb74c8232cfda084545ad8c1f8fe6c5e8176da9a77729e1fa9044d863/PKG_MIRROR_HASH:=skip/" feeds/packages/net/trojan-plus/Makefile
-
+sed -i 's/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=skip/' feeds/kiddin9/trojan-plus/Makefile
 sed -i "s/PKG_MIRROR_HASH:=0981bf49cb8a6e7f81912808987727bf6a2454ad0a3cf744f1a64bfc1969b088/PKG_MIRROR_HASH:=skip/" feeds/packages/net/redsocks2/Makefile
 
 sed -i "s/PKG_MIRROR_HASH:=0981bf49cb8a6e7f81912808987727bf6a2454ad0a3cf744f1a64bfc1969b088/PKG_MIRROR_HASH:=skip/" feeds/small/redsocks2/Makefile
