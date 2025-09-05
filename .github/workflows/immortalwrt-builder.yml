@@ -134,7 +134,7 @@ jobs:
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
         $GITHUB_WORKSPACE/$FILE_SH
-        echo "KERNEL_PATCHVER=$(cat include/kernel-6.6|grep LINUX_KERNEL_HASH | sed "s/.*\(6\.6\.\?[0-9]*\).*/\1/g")" >> $GITHUB_ENV
+        echo "KERNEL_PATCHVER=$(cat target/linux/generic/kernel-6.12 | grep LINUX_KERNEL_HASH | sed "s/.*\(6\.12\.\?[0-9]*\).*/\1/g")" >> $GITHUB_ENV
 
     - name: SSH connection to Actions
       uses: P3TERX/ssh2actions@v1.0.0
