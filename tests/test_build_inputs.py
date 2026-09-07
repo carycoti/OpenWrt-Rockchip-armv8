@@ -1,5 +1,8 @@
 from pathlib import Path
 import re
+import subprocess
+import sys
+import tempfile
 import unittest
 
 
@@ -52,6 +55,35 @@ class LedeBuildInputs(unittest.TestCase):
             config_value(config, "CONFIG_TESTING_KERNEL"),
             "y",
             "testing-kernel selection overrides the requested stable 6.12 kernel",
+        )
+
+    def test_broken_upstream_patch_escapes_are_normalized(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            checkout = Path(temp_dir)
+            patch = checkout / "target/linux/rockchip/patches-6.18/0130-net-dsa-add-motorcomm-yt921x.patch"
+            patch.parent.mkdir(parents=True)
+            patch.write_text(
+                " \\tDSA_TAG_PROTO_MXL862\\t\\t= DSA_TAG_PROTO_MXL862_VALUE,\n"
+                "+\\tDSA_TAG_PROTO_YT921X\\t\\t= DSA_TAG_PROTO_YT921X_VALUE,\n"
+                '+\tconst char *separator = "\\t";\n',
+                encoding="utf-8",
+            )
+
+            subprocess.run(
+                [sys.executable, str(ROOT / "lede" / "repair_upstream_patches.py"), str(checkout)],
+                check=True,
+            )
+
+            repaired = patch.read_text(encoding="utf-8")
+            self.assertIn("\tDSA_TAG_PROTO_YT921X\t\t=", repaired)
+            self.assertIn(r'const char *separator = "\t";', repaired)
+
+    def test_upstream_patch_repair_runs_before_customizations(self):
+        lines = active_lines(ROOT / "lede" / "diy-part1.sh")
+
+        self.assertIn(
+            'python3 "$GITHUB_WORKSPACE/lede/repair_upstream_patches.py" .',
+            lines,
         )
 
 

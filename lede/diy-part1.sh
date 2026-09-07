@@ -10,6 +10,9 @@
 # Description: OpenWrt DIY script part 1 (Before Update feeds)
 # =================================================================
 
+# 修复上游偶发提交中补丁把制表符写成字面量 \t 的问题。
+python3 "$GITHUB_WORKSPACE/lede/repair_upstream_patches.py" .
+
 # 执行命令来切换内核
 #sed -i 's/PATCHVER:=6.1/PATCHVER:=6.6/g' target/linux/rockchip/Makefile
 
