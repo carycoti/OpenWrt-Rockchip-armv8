@@ -29,6 +29,25 @@ def config_value(path: Path, key: str):
 
 
 class ImmortalWrtBuildInputs(unittest.TestCase):
+    def test_apk_core_feed_keeps_upstream_packages_index_path(self):
+        script = ROOT / "immortalwrt" / "diy-part1.sh"
+        script_text = script.read_text(encoding="utf-8")
+
+        self.assertNotIn(
+            r"targets/%S/\$(LINUX_VERSION)",
+            script_text,
+            "the APK core repository must keep the upstream packages index path",
+        )
+
+    def test_video_feed_is_compile_only_when_no_runtime_index_is_published(self):
+        config = ROOT / "immortalwrt" / "config" / "rockchip.config"
+
+        self.assertEqual(
+            config_value(config, "CONFIG_FEED_video"),
+            "m",
+            "the unpublished video feed must not be emitted in the runtime repository list",
+        )
+
     def test_smartdns_source_is_not_deleted(self):
         for variant in ("immortalwrt", "official"):
             with self.subTest(variant=variant):

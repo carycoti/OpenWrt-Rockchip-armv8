@@ -30,7 +30,6 @@ sed -i '$a src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwal
 # echo 'src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main' >> feeds.conf.default
  
 sed -i "/telephony/d" feeds.conf.default
-sed -i "s?targets/%S/packages?targets/%S/\$(LINUX_VERSION)?" include/feeds.mk
 sed -i '/	refresh_config();/d' scripts/feeds
 
 # 修改 Makefile
