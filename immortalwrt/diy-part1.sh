@@ -16,6 +16,8 @@
 shopt -s extglob
 # 添加软件源
 sed -i '$a src-git kiddin9 https://github.com/kiddin9/kwrt-packages.git;main' feeds.conf.default
+sed -i '$a src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main' feeds.conf.default
+sed -i '$a src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwall2.git;main' feeds.conf.default
 # sed -i '$a src-git kiddin9 https://github.com/kiddin9/openwrt-packages.git;master' feeds.conf.default
 
 # kenzok8
@@ -110,6 +112,8 @@ mv -f feeds/kiddin9/r81* tmp/
 curl -sL https://raw.githubusercontent.com/kenzok8/openwrt-packages/master/luci-app-quickstart/luasrc/controller/quickstart.lua -o feeds/kiddin9/luci-app-quickstart/luasrc/controller/quickstart.lua
 
 ./scripts/feeds install -a -p kiddin9 -f
+./scripts/feeds install -a -p passwall_packages -f
+./scripts/feeds install -a -p passwall2 -f
 
 ./scripts/feeds install -a
 # mv -f feeds/kiddin9/r81* tmp/

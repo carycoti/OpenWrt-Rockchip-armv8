@@ -45,6 +45,31 @@ class ImmortalWrtBuildInputs(unittest.TestCase):
                     "y",
                 )
 
+    def test_passwall2_uses_official_feeds_and_is_selected(self):
+        feed_lines = active_lines(ROOT / "immortalwrt" / "diy-part1.sh")
+        config = ROOT / "immortalwrt" / "config" / "rockchip.config"
+
+        self.assertIn(
+            "sed -i '$a src-git passwall_packages https://github.com/Openwrt-Passwall/openwrt-passwall-packages.git;main' feeds.conf.default",
+            feed_lines,
+        )
+        self.assertIn(
+            "sed -i '$a src-git passwall2 https://github.com/Openwrt-Passwall/openwrt-passwall2.git;main' feeds.conf.default",
+            feed_lines,
+        )
+        self.assertIn("./scripts/feeds install -a -p passwall_packages -f", feed_lines)
+        self.assertIn("./scripts/feeds install -a -p passwall2 -f", feed_lines)
+        self.assertEqual(config_value(config, "CONFIG_PACKAGE_luci-app-passwall2"), "y")
+        self.assertEqual(config_value(config, "CONFIG_PACKAGE_luci-i18n-passwall2-zh-cn"), "y")
+        self.assertEqual(config_value(config, "CONFIG_PACKAGE_openwrt-keyring"), "y")
+        for feed in ("kiddin9", "passwall_packages", "passwall2"):
+            with self.subTest(runtime_feed=feed):
+                self.assertEqual(
+                    config_value(config, f"CONFIG_FEED_{feed}"),
+                    "m",
+                    "compile-only feeds must be disabled in the generated runtime repository list",
+                )
+
 
 class LedeBuildInputs(unittest.TestCase):
     def test_stable_kernel_selection_is_not_overridden_by_testing_kernel(self):
