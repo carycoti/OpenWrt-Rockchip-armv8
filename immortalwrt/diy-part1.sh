@@ -102,7 +102,7 @@ sed -i 's/PKG_MIRROR_HASH:=.*/PKG_MIRROR_HASH:=skip/' feeds/kiddin9/cgroupfs-mou
 # sed -i "/LUCI_BUILD_PACKAGES +=/i\  define Package\/luci-i18n-\$\(LUCI_BASENAME\)-\$\(1\)\/postinst\n\t[ -n "\$\$\$\${IPKG_INSTROOT}" ] || {\n\t\t\(. \/etc\/uci-defaults\/luci-i18n-\$\(LUCI_BASENAME\)-\$\(1\)\) \&\& rm -f \/etc\/uci-defaults\/luci-i18n-\$\(LUCI_BASENAME\)-\$\(1\)\n\t\texit 0\n\t}\n  endef" feeds/luci/luci.mk
 
 # kiddin9 相关的冲突包
-rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*,smartdns}
+rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*}
 rm -rf feeds/packages/utils/v2dat
 rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,accel-ppp,dockerd,cgroupfs-mount,lua-maxminddb,luci-app-linkease,luci-app-quickstart,fullconenat-nft,redsocks2,shadowsocks-libev,shadowsocksr-libev,trojan-plus}
 mv -f feeds/kiddin9/r81* tmp/

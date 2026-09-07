@@ -50,9 +50,9 @@ find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/PKG_SOURCE_U
 # rm -rf feeds/packages/utils/v2dat
 # rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
-# 替换 golang
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
+# 保留 OpenWrt 官方 golang feed。
+# 官方 feed 的默认工具链与 containerd 配套；覆盖为旧版第三方 feed
+# 会把实际 Go 降到 1.24.13，导致 containerd 2.2.5 要求 Go >= 1.25。
 
 # 替换编译出错的包
 rm -rf feeds/packages/lang/ruby
@@ -76,7 +76,7 @@ sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b5
 sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b554664439f04/PKG_MIRROR_HASH:=skip/" feeds/kenzo/lua-maxminddb/Makefile
 
 # kiddin9 相关的冲突包
-rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*,smartdns}
+rm -rf feeds/packages/net/{alist,mosdns,xray*,v2ray*,v2ray*}
 rm -rf feeds/packages/utils/v2dat
 rm -rf feeds/kiddin9/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,upx,miniupnpd-iptables,wireless-regdb,quectel_SRPD_PCIE,adguardhome,shortcut-fe,fibocom_QMI_WWAN,quectel_QMI_WWAN,rtl8189es,quectel_Gobinet,quectel_MHI,accel-ppp,dockerd,cgroupfs-mount,lua-maxminddb,luci-app-linkease,luci-app-quickstart,fullconenat-nft,redsocks2,shadowsocks-libev,shadowsocksr-libev,trojan-plus}
 mv -f feeds/kiddin9/r81* tmp/
