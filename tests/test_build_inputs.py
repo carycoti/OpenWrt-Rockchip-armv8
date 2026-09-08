@@ -91,6 +91,20 @@ class ImmortalWrtBuildInputs(unittest.TestCase):
 
 
 class LedeBuildInputs(unittest.TestCase):
+    def test_official_golang_feed_is_kept_for_hysteria_compatibility(self):
+        lines = active_lines(ROOT / "lede" / "diy-part1.sh")
+
+        self.assertNotIn(
+            "rm -rf feeds/packages/lang/golang",
+            lines,
+            "the LEDE Go toolchain must not be replaced by an older third-party feed",
+        )
+        self.assertNotIn(
+            "git clone https://github.com/kenzok8/golang feeds/packages/lang/golang",
+            lines,
+            "hysteria requires the newer Go toolchain selected by the LEDE packages feed",
+        )
+
     def test_stable_kernel_selection_is_not_overridden_by_testing_kernel(self):
         config = ROOT / "lede" / "config" / "rockchip.config"
 

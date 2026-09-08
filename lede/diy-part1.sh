@@ -75,8 +75,7 @@ sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b5
 # rm -rf feeds/routing/batman-adv
 # rm -rf feeds/smpackage/{base-files,dnsmasq,firewall*,fullconenat,libnftnl,nftables,ppp,opkg,ucl,upx,vsftpd*,miniupnpd-iptables,wireless-regdb}
 
-rm -rf feeds/packages/lang/golang
-git clone https://github.com/kenzok8/golang feeds/packages/lang/golang
+# 保留 LEDE 官方 golang feed，避免第三方旧版 Go 无法编译新版 hysteria。
 
 # 替换编译出错的包
 # rm -rf feeds/packages/net/curl
