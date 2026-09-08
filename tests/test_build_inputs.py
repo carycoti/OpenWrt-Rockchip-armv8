@@ -167,7 +167,7 @@ class ReleaseMetadata(unittest.TestCase):
             with self.subTest(variant=variant):
                 workflow = ROOT / ".github" / "workflows" / f"{variant}-builder.yml"
                 text = workflow.read_text(encoding="utf-8")
-                resolver = 'KERNEL_VERSION="$(make -s val.LINUX_VERSION)"'
+                resolver = 'KERNEL_VERSION="$(make -s --no-print-directory -C target/linux TOPDIR="$PWD" val.LINUX_VERSION)"'
 
                 self.assertIn(resolver, text)
                 self.assertLess(
