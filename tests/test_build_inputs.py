@@ -161,5 +161,33 @@ class OfficialBuildInputs(unittest.TestCase):
         )
 
 
+class ReleaseMetadata(unittest.TestCase):
+    def test_release_uses_resolved_build_kernel_version(self):
+        for variant in ("lede", "official", "immortalwrt"):
+            with self.subTest(variant=variant):
+                workflow = ROOT / ".github" / "workflows" / f"{variant}-builder.yml"
+                text = workflow.read_text(encoding="utf-8")
+                resolver = 'KERNEL_VERSION="$(make -s val.LINUX_VERSION)"'
+
+                self.assertIn(resolver, text)
+                self.assertLess(
+                    text.index("make defconfig"),
+                    text.index(resolver),
+                    "kernel version must be resolved from the normalized build config",
+                )
+                self.assertIn(
+                    'echo "KERNEL_VERSION=$KERNEL_VERSION" >> "$GITHUB_ENV"',
+                    text,
+                )
+                self.assertIn("内核版本：${{ env.KERNEL_VERSION }}", text)
+                self.assertIn("linux-${{ env.KERNEL_VERSION }}-", text)
+                self.assertNotIn("linux-6.6-", text)
+                self.assertNotRegex(
+                    text,
+                    r'(?m)^\s*echo "KERNEL_(?:PATCHVER|VERSION)=.*kernel-6\.(?:6|12)',
+                    "release metadata must not read a hard-coded kernel series",
+                )
+
+
 if __name__ == "__main__":
     unittest.main()

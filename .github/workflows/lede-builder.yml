@@ -142,9 +142,7 @@ jobs:
 
         ZZZ="package/lean/default-settings/files/zzz-default-settings"
         echo "DISTRIB_REVISION=$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')" >> $GITHUB_ENV
-        echo "KERNEL_PATCHVER=$(cat include/kernel-6.6|grep LINUX_KERNEL_HASH | sed "s/.*\(6\.6\.\?[0-9]*\).*/\1/g")" >> $GITHUB_ENV
         echo "	    当前编译版本：$(cat $ZZZ|grep DISTRIB_REVISION= | sed 's/^.\{24\}//g' | sed 's/.\{26\}$//')"
-        echo "	    内核版本：$(cat include/kernel-6.6|grep LINUX_KERNEL_HASH | sed "s/.*\(6\.6\.\?[0-9]*\).*/\1/g")"
 
         echo
         echo "=========================================="
@@ -179,6 +177,13 @@ jobs:
       run: |
         cd openwrt
         make defconfig
+        KERNEL_VERSION="$(make -s val.LINUX_VERSION)"
+        if [[ ! "$KERNEL_VERSION" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?([.-][0-9A-Za-z._-]+)?$ ]]; then
+          echo "::error::Unable to resolve kernel version: $KERNEL_VERSION"
+          exit 1
+        fi
+        echo "KERNEL_VERSION=$KERNEL_VERSION" >> "$GITHUB_ENV"
+        echo "内核版本：$KERNEL_VERSION"
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
@@ -247,7 +252,7 @@ jobs:
         
         ⏰ 编译时间：${{ env.FILE_TIME1 }}
         
-        🎈 内核版本：${{ env.KERNEL_PATCHVER }}
+        🎈 内核版本：${{ env.KERNEL_VERSION }}
         
         🎉 编译版本：${{ env.DISTRIB_REVISION }}
         
@@ -264,7 +269,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GIT_USER_TOKEN }}
       with:
-        name: ${{ steps.tag.outputs.release_tag }}-${{ env.DISTRIB_REVISION }}-Rockchip-armv8-linux-6.6-固件下载
+        name: ${{ steps.tag.outputs.release_tag }}-${{ env.DISTRIB_REVISION }}-Rockchip-armv8-linux-${{ env.KERNEL_VERSION }}-固件下载
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
         files: |
