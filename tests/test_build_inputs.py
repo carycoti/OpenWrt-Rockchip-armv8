@@ -154,6 +154,17 @@ class LedeBuildInputs(unittest.TestCase):
             lines,
         )
 
+    def test_vim_fuller_requires_vim_runtime(self):
+        config = ROOT / "lede" / "config" / "rockchip.config"
+        if config_value(config, "CONFIG_PACKAGE_vim-fuller") == "y":
+            self.assertEqual(
+                config_value(config, "CONFIG_PACKAGE_vim-runtime"),
+                "y",
+                "vim-fuller install copies $(PKG_INSTALL_DIR)/usr/share/vim/vim$(VIMVER); "
+                "without vim-runtime the Build/Compile/vim-runtime step never runs and packaging fails with "
+                "'cp: cannot stat .../vim82/ipkg-install/usr/share/vim/vim82' (logs_92971291339:12461)",
+            )
+
 
 class OfficialBuildInputs(unittest.TestCase):
     def test_official_golang_feed_is_kept_for_containerd_compatibility(self):
