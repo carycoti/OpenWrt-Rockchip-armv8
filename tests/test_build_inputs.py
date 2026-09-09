@@ -154,16 +154,40 @@ class LedeBuildInputs(unittest.TestCase):
             lines,
         )
 
-    def test_vim_fuller_requires_vim_runtime(self):
+    def test_vim_fuller_does_not_clash_with_vim_runtime(self):
         config = ROOT / "lede" / "config" / "rockchip.config"
+        # vim 8.2 (coolsnowwolf/packages) bundles runtime in vim-fuller install:
+        #   $(CP) $(PKG_INSTALL_DIR)/usr/share/vim/vim$(VIMVER) $(1)/usr/share/vim
+        # Selecting vim-runtime alongside vim-fuller causes opkg file clash
+        #   check_data_file_clashes: Package vim-runtime wants to install file .../vim82/...
+        #   But that file is already provided by package * vim-fuller (logs_93037651892:13969, 1166 errors)
         if config_value(config, "CONFIG_PACKAGE_vim-fuller") == "y":
-            self.assertEqual(
+            self.assertNotEqual(
                 config_value(config, "CONFIG_PACKAGE_vim-runtime"),
                 "y",
-                "vim-fuller install copies $(PKG_INSTALL_DIR)/usr/share/vim/vim$(VIMVER); "
-                "without vim-runtime the Build/Compile/vim-runtime step never runs and packaging fails with "
-                "'cp: cannot stat .../vim82/ipkg-install/usr/share/vim/vim82' (logs_92971291339:12461)",
+                "vim-fuller (8.2) already bundles runtime files; selecting vim-runtime as well "
+                "causes 1166 check_data_file_clashes at package/install (logs_93037651892:13969)",
             )
+
+    def test_vim_fuller_runtime_build_is_patched(self):
+        # Build/Compile/vim-runtime only runs when CONFIG_PACKAGE_vim-runtime or vim-help is y.
+        # With only vim-fuller=y, installrtbase never ran and vim-fuller install failed:
+        #   cp: cannot stat .../vim82/ipkg-install/usr/share/vim/vim82: No such file or directory
+        #   (logs_92971291339:12461)
+        # Fix: lede/diy-part1.sh must patch Makefile guard to also trigger on vim-fuller.
+        script = (ROOT / "lede" / "diy-part1.sh").read_text(encoding="utf-8")
+        self.assertIn(
+            "CONFIG_PACKAGE_vim-fuller",
+            script,
+            "lede/diy-part1.sh must patch feeds/packages/utils/vim/Makefile so that "
+            "Build/Compile/vim-runtime runs even when only vim-fuller is selected "
+            "(fixes logs_92971291339 without reintroducing logs_93037651892 clash)",
+        )
+        self.assertIn(
+            "feeds/packages/utils/vim/Makefile",
+            script,
+            "vim fix must target feeds/packages/utils/vim/Makefile",
+        )
 
 
 class OfficialBuildInputs(unittest.TestCase):

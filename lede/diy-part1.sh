@@ -65,6 +65,13 @@ sed -i "s/PKG_MIRROR_HASH:=ed7c71afb74c8232cfda084545ad8c1f8fe6c5e8176da9a77729e
 sed -i "s/PKG_MIRROR_HASH:=0981bf49cb8a6e7f81912808987727bf6a2454ad0a3cf744f1a64bfc1969b088/PKG_MIRROR_HASH:=skip/" feeds/packages/net/redsocks2/Makefile
 sed -i "s/PKG_MIRROR_HASH:=e70dd8843c3688b58f66fff5320a93d5789b79114bcb36a94d5b554664439f04/PKG_MIRROR_HASH:=skip/" feeds/packages/lang/lua-maxminddb/Makefile
 
+# Fix vim 8.2 (coolsnowwolf/packages) bundling clash: vim-fuller bundles runtime
+# Build/Compile/vim-runtime only runs when vim-runtime/help is selected, so with
+# only vim-fuller it fails with cp cannot stat .../vim82 (logs_92971291339).
+# Selecting both causes 1166 file clashes at package/install (logs_93037651892).
+# Patch guard to also run when vim-fuller is selected (self-contained fuller).
+sed -i 's/ifneq ($(CONFIG_PACKAGE_vim-runtime)$(CONFIG_PACKAGE_vim-help),)/ifneq ($(CONFIG_PACKAGE_vim-runtime)$(CONFIG_PACKAGE_vim-help)$(CONFIG_PACKAGE_vim-fuller),)/' feeds/packages/utils/vim/Makefile
+
 # rm -rf feeds/luci/applications/luci-app-mosdns
 # rm -rf feeds/packages/net/{alist,adguardhome,mosdns,xray*,v2ray*,v2ray*,sing*,smartdns,jool}
 # rm -rf feeds/packages/utils/{v2dat,gl-mifi-mcu}
