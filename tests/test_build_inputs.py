@@ -170,6 +170,26 @@ class OfficialBuildInputs(unittest.TestCase):
             "containerd must use the toolchain selected by the official OpenWrt feed",
         )
 
+    def test_gn_host_build_requires_clang_toolchain(self):
+        depends = (ROOT / "official" / "depends-ubuntu-latest").read_text(encoding="utf-8")
+        tokens = depends.split()
+        self.assertIn(
+            "clang",
+            tokens,
+            "helloworld/gn host build invokes clang++ (C++23); official/depends must include clang",
+        )
+
+
+class ImmortalWrtHostToolchain(unittest.TestCase):
+    def test_gn_host_build_requires_clang_toolchain(self):
+        depends = (ROOT / "immortalwrt" / "depends-ubuntu-latest").read_text(encoding="utf-8")
+        tokens = depends.split()
+        self.assertIn(
+            "clang",
+            tokens,
+            "helloworld/gn host build invokes clang++ (C++23); immortalwrt/depends must include clang",
+        )
+
 
 class ReleaseMetadata(unittest.TestCase):
     def test_release_uses_resolved_build_kernel_version(self):
