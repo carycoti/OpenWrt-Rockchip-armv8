@@ -105,6 +105,16 @@ class LedeBuildInputs(unittest.TestCase):
             "hysteria requires the newer Go toolchain selected by the LEDE packages feed",
         )
 
+    def test_gn_host_build_requires_clang_toolchain(self):
+        depends = (ROOT / "lede" / "depends-ubuntu-latest").read_text(encoding="utf-8")
+        tokens = depends.split()
+        self.assertIn(
+            "clang",
+            tokens,
+            "helloworld/gn host build invokes clang++ (C++23); lede/depends-ubuntu-latest must include clang "
+            "or every build selecting naiveproxy/bypass/passwall fails with '/bin/sh: 1: clang++: not found'",
+        )
+
     def test_stable_kernel_selection_is_not_overridden_by_testing_kernel(self):
         config = ROOT / "lede" / "config" / "rockchip.config"
 
