@@ -30,6 +30,13 @@ sed -i '/	refresh_config();/d' scripts/feeds
 # 更新 feeds
 ./scripts/feeds update -a
 
+# feed 克隆完成后再跑一次补丁修复：gn 的 std::expected 回退版 Result 只有值构造函数，
+# 返回 lambda 时需要两次用户定义转换（lambda -> std::function -> Result），clang 直接报
+#   error: no viable conversion from returned value of type '(lambda at
+#   ../src/gn/edit_subcommands.cc:73:12)' to function return type 'Result<ParseNodeGenerator>'
+# 导致 helloworld/gn 主机构建失败（logs_97647408555）。
+python3 "$GITHUB_WORKSPACE/lede/repair_upstream_patches.py" .
+
 # 修改 Makefile
 find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/..\/..\/luci.mk/$(TOPDIR)\/feeds\/luci\/luci.mk/g' {}
 find package/*/ -maxdepth 2 -path "*/Makefile" | xargs -i sed -i 's/..\/..\/lang\/golang\/golang-package.mk/$(TOPDIR)\/feeds\/packages\/lang\/golang\/golang-package.mk/g' {}

@@ -28,6 +28,54 @@ def config_value(path: Path, key: str):
     return value
 
 
+FIXTURES = ROOT / "tests" / "fixtures"
+
+
+def repair_upstream_patches(checkout: Path):
+    subprocess.run(
+        [sys.executable, str(ROOT / "lede" / "repair_upstream_patches.py"), str(checkout)],
+        check=True,
+    )
+
+
+def assert_hunk_headers_match_bodies(test, patch_text: str):
+    """Every `@@ -a,b +c,d @@` header must count exactly the lines it claims.
+
+    `patch(1)`/`git apply` reject a unified diff whose hunk headers disagree with
+    their bodies, which is the failure mode of editing a patch file.
+    """
+    old_left = new_left = 0
+    header = None
+    for line in patch_text.splitlines():
+        headline = re.match(r"^@@ -(\d+),(\d+) \+(\d+),(\d+) @@", line)
+        if headline:
+            test.assertEqual(
+                (old_left, new_left), (0, 0),
+                f"hunk header {header!r} claims fewer lines than its body has",
+            )
+            header = line
+            old_left, new_left = int(headline.group(2)), int(headline.group(4))
+            continue
+
+        marker = line[:1]
+        if (old_left, new_left) == (0, 0):
+            test.assertFalse(
+                line.startswith((" ", "+")) and not line.startswith(("+++ ", "--- ")),
+                f"diff line outside any hunk: {line!r}",
+            )
+        elif marker == " ":
+            old_left -= 1
+            new_left -= 1
+        elif marker == "-":
+            old_left -= 1
+        elif marker == "+":
+            new_left -= 1
+        elif marker != "\\":
+            test.fail(f"malformed hunk body line: {line!r}")
+
+    test.assertEqual((old_left, new_left), (0, 0), f"hunk header {header!r} over-claims lines")
+
+
 class ImmortalWrtBuildInputs(unittest.TestCase):
     def test_apk_core_feed_keeps_upstream_packages_index_path(self):
         script = ROOT / "immortalwrt" / "diy-part1.sh"
@@ -188,6 +236,84 @@ class LedeBuildInputs(unittest.TestCase):
             script,
             "vim fix must target feeds/packages/utils/vim/Makefile",
         )
+
+
+class UpstreamPatchRepairs(unittest.TestCase):
+    GN_PATCH_NAME = "030-fix-clang-18-and-earlier-expected.patch"
+    GN_REPAIR_CALL = 'python3 "$GITHUB_WORKSPACE/lede/repair_upstream_patches.py" .'
+
+    def stage_gn_patch(self, fixture: str) -> Path:
+        temporary_dir = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary_dir.cleanup)
+        patch = (
+            Path(temporary_dir.name)
+            / "feeds/helloworld/gn/patches"
+            / self.GN_PATCH_NAME
+        )
+        patch.parent.mkdir(parents=True)
+        patch.write_bytes((FIXTURES / fixture).read_bytes())
+        return patch
+
+    def test_gn_result_fallback_gains_constrained_conversion(self):
+        # helloworld's gn package patches gn's std::expected fallback `Result<T>`
+        # with value constructors only (`Result(const T&)`, `Result(T&&)`).
+        # Returning a lambda from a function declared `Result<std::function<...>>`
+        # then requires two user-defined conversions (lambda -> std::function ->
+        # Result), which C++ rejects, so the gn host build dies on clang 18 and
+        # earlier (whose standard library never takes the std::expected branch):
+        #   error: no viable conversion from returned value of type '(lambda at
+        #   ../src/gn/edit_subcommands.cc:73:12)' to function return type
+        #   'Result<ParseNodeGenerator>'   (logs_97647408555:12266)
+        # The repaired patch must apply the fix upstream shipped in
+        # fw876/helloworld@69fd3c8e ("gn: fix converting constructors in Result
+        # fallback").
+        patch = self.stage_gn_patch("gn-030-result-fallback-broken.patch")
+        fixed = (FIXTURES / "gn-030-result-fallback-fixed.patch").read_bytes()
+
+        repair_upstream_patches(patch.parents[4])
+        repaired = patch.read_bytes()
+
+        self.assertIn(b"std::in_place_type<T>", repaired)
+        self.assertIn(b"+#include <type_traits>", repaired)
+        assert_hunk_headers_match_bodies(self, repaired.decode("utf-8"))
+        self.assertEqual(
+            repaired.split(b"--- a/", 1)[1],
+            fixed.split(b"--- a/", 1)[1],
+            "the repaired patch must match the upstream fix byte for byte",
+        )
+
+    def test_gn_result_fallback_repair_is_idempotent(self):
+        for fixture in (
+            "gn-030-result-fallback-broken.patch",
+            "gn-030-result-fallback-fixed.patch",
+        ):
+            with self.subTest(fixture=fixture):
+                patch = self.stage_gn_patch(fixture)
+                checkout = patch.parents[4]
+
+                repair_upstream_patches(checkout)
+                once_repaired = patch.read_bytes()
+                repair_upstream_patches(checkout)
+
+                self.assertEqual(once_repaired, patch.read_bytes())
+
+    def test_gn_result_fallback_repair_ignores_a_checkout_without_feeds(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repair_upstream_patches(Path(temp_dir))
+
+    def test_gn_result_fallback_repair_runs_after_feed_update(self):
+        # gn ships that fallback patch inside the helloworld feed, so the feed has
+        # to be cloned before the repair can reach it.
+        for variant in ("lede", "official", "immortalwrt"):
+            with self.subTest(variant=variant):
+                lines = active_lines(ROOT / variant / "diy-part1.sh")
+                self.assertIn("./scripts/feeds update -a", lines)
+                self.assertIn(self.GN_REPAIR_CALL, lines)
+                self.assertGreater(
+                    max(index for index, line in enumerate(lines) if line == self.GN_REPAIR_CALL),
+                    lines.index("./scripts/feeds update -a"),
+                    "the gn Result fallback repair must run after the feeds are cloned",
+                )
 
 
 class OfficialBuildInputs(unittest.TestCase):
